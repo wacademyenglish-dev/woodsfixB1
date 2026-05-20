@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>WOLF LABS | The Blackwood Cabin (B1)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* === THE BLACKWOOD CABIN (HORROR / THRILLER EDITION) === */
+        :root {
+            --bg-base: #050505;       
+            --bg-panel: #110e0e;      
+            --bg-card: #1a1515;       
+            --brand-neon: #dc2626;    
+            --brand-glow: rgba(220, 38, 38, 0.4);
+            --accent-amber: #f59e0b;  
+            --accent-cyan: #64748b;   
+            --text-main: #e2e8f0;     
+            --text-muted: #94a3b8;    
+            --border-soft: rgba(220, 38, 38, 0.2);
+            
+            --font-ui: 'Inter', sans-serif;
+            --font-display: 'Cinzel', serif;
+            --font-typewriter: 'Courier Prime', monospace;
+        }
+
+        body { 
+            font-family: var(--font-ui); 
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+            background-image: radial-gradient(circle at center, #1a1515 0%, #000000 80%);
+        }
+
+        h1, h2, h3, .font-display { font-family: var(--font-display); }
+        .font-typewriter { font-family: var(--font-typewriter); }
+
+        /* HUD TOP */
+        #hud-top {
+            position: fixed; top: 0; left: 0; right: 0; padding: 15px 30px;
+            background: rgba(5, 5, 5, 0.95);
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-soft);
+            z-index: 1000; box-shadow: 0 5px 30px rgba(0,0,0,0.9);
+        }
+        .hud-bar-container { width: 120px; height: 6px; background: rgba(255,255,255,0.1); overflow: hidden; border-radius: 10px;}
+        .hud-bar-fill { height: 100%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 10px; box-shadow: 0 0 10px currentColor;}
+
+        /* CONTENT ARENA */
+        #mission-arena { height: 100vh; padding-bottom: 100px; padding-top: 70px; overflow-y: auto;}
+
+        /* CARDS */
+        .horror-card {
+            background-color: var(--bg-panel); border-radius: 12px; padding: 2.5rem;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.9), inset 0 0 0 1px var(--border-soft);
+            position: relative; transition: all 0.3s ease;
+            background-image: url('data:image/svg+xml;utf8,<svg opacity="0.03" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.5" numOctaves="3" stitchTiles="stitch"/></filter><rect width="100" height="100" filter="url(%23n)"/></svg>');
+        }
+
+        /* BUTTONS */
+        .btn-blood {
+            background: rgba(220, 38, 38, 0.1); color: var(--brand-neon); border-radius: 4px;
+            font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+            transition: all 0.3s ease; border: 1px solid var(--brand-neon); cursor: pointer; box-shadow: inset 0 0 15px rgba(220,38,38,0.05);
+        }
+        .btn-blood:hover { transform: translateY(-2px); background: var(--brand-neon); color: #fff; box-shadow: 0 0 25px var(--brand-glow); }
+        .btn-blood:active { transform: scale(0.96); }
+
+        .btn-amber {
+            background: rgba(245, 158, 11, 0.1); border: 1px solid var(--accent-amber); color: var(--accent-amber); border-radius: 4px;
+            font-family: var(--font-display); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;
+            transition: all 0.2s ease; cursor: pointer;
+        }
+        .btn-amber:hover { background: var(--accent-amber); color: #000; box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);}
+
+        /* SLIDER */
+        input[type=range].horror-slider { -webkit-appearance: none; width: 100%; background: transparent; }
+        input[type=range].horror-slider:focus { outline: none; }
+        input[type=range].horror-slider::-webkit-slider-runnable-track { width: 100%; height: 6px; cursor: pointer; background: rgba(255,255,255,0.1); border-radius: 8px; }
+        input[type=range].horror-slider::-webkit-slider-thumb { -webkit-appearance: none; height: 24px; width: 24px; border-radius: 50%; background: var(--brand-neon); cursor: pointer; margin-top: -9px; box-shadow: 0 0 15px var(--brand-glow); transition: transform 0.2s; }
+        input[type=range].horror-slider::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+        /* KANBAN (Vocab Drag) */
+        .drag-word { padding: 10px 20px; background: var(--bg-card); color: var(--text-main); display: inline-flex; align-items: center; justify-content: center; font-family: var(--font-typewriter); font-size: 1rem; font-weight: bold; cursor: grab; box-shadow: 0 4px 10px rgba(0,0,0,0.8); transition: all 0.2s; border-radius: 4px; user-select: none; border: 1px solid rgba(255,255,255,0.1);}
+        .drag-word:hover { transform: translateY(-2px); border-color: var(--brand-neon); color: var(--brand-neon); }
+        .drag-word.dragging { opacity: 0.5; cursor: grabbing; transform: scale(1.05); }
+        .drop-zone { background: rgba(0,0,0,0.6); border: 1px dashed var(--text-muted); border-radius: 4px; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; min-height: 160px; transition: all 0.3s; }
+        .drop-zone.drag-over { background: rgba(220, 38, 38, 0.1); border-color: var(--brand-neon); border-style: solid; }
+        .drop-area { min-height: 50px; background: rgba(0,0,0,0.8); border-radius: 4px; display: flex; align-items: center; justify-content: center; margin-top: 1rem; }
+
+        /* TOGGLE TUNER */
+        .tuner-track { width: 70px; height: 36px; background: rgba(0,0,0,0.8); border-radius: 18px; position: relative; cursor: pointer; border: 1px solid var(--text-muted); transition: background 0.3s; }
+        .tuner-knob { width: 28px; height: 28px; background: var(--text-muted); border-radius: 50%; position: absolute; top: 3px; left: 4px; transition: transform 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.8);}
+        .tuner-track.active { background: var(--brand-neon); border-color: var(--brand-neon); }
+        .tuner-track.active .tuner-knob { transform: translateX(32px); background: #fff; box-shadow: 0 0 10px rgba(255,255,255,0.8);}
+
+        /* LOGIC GATE (Node Match) */
+        .logic-node { background: var(--bg-card); border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); padding: 1.2rem; font-family: var(--font-typewriter); font-weight: 600; font-size: 1.1rem; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.5); border-radius: 4px; text-align: center;}
+        .logic-node:hover:not(.matched) { border-color: var(--accent-amber); color: var(--accent-amber); transform: translateY(-2px); }
+        .logic-node.active { border-color: var(--accent-amber); background: rgba(245, 158, 11, 0.1); box-shadow: inset 0 0 15px rgba(245, 158, 11, 0.2); color: var(--accent-amber); }
+        .logic-node.matched { background: rgba(0,0,0,0.8); color: #333; pointer-events: none; border-color: transparent; }
+
+        /* RADIO SIMULATOR */
+        .radio-sim { width: 100%; max-width: 400px; height: 300px; border: 4px solid #222; border-radius: 12px; background: #111; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0 20px 40px rgba(0,0,0,0.9); margin: 0 auto;}
+        .radio-screen { background: #0a190a; border: 2px solid #1a3a1a; width: 80%; height: 100px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: var(--font-typewriter); color: #22c55e; font-size: 2.5rem; text-shadow: 0 0 10px #22c55e; box-shadow: inset 0 0 20px rgba(0,0,0,0.8); margin-bottom: 20px;}
+        .radio-screen.static { color: #1a3a1a; text-shadow: none; animation: staticFlicker 0.1s infinite; }
+        .radio-controls { display: flex; gap: 30px; align-items: center;}
+        .dial { width: 60px; height: 60px; border-radius: 50%; background: #333; border: 2px solid #555; cursor: pointer; box-shadow: 0 5px 10px rgba(0,0,0,0.8); position: relative; transition: transform 0.2s;}
+        .dial::after { content: ''; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 4px; height: 15px; background: #fff; border-radius: 2px; }
+        .dial:active { transform: rotate(15deg); }
+        @keyframes staticFlicker { 0% { opacity: 0.8; } 50% { opacity: 0.3; } 100% { opacity: 0.9; } }
+
+        /* REDACTED TEXT / TORN DIARY */
+        .diary-page { background: #e5e5f7; color: #1e1e24; padding: 40px; border-radius: 4px; font-family: 'Courier Prime', monospace; font-size: 1.2rem; line-height: 2; box-shadow: inset 0 0 50px rgba(0,0,0,0.2); background-image: radial-gradient(#d1d1db 1px, transparent 1px); background-size: 20px 20px;}
+        .faded-word { background-color: rgba(220, 38, 38, 0.15); color: var(--brand-neon); cursor: pointer; transition: all 0.2s; padding: 2px 8px; border-radius: 2px; border: 1px dashed var(--brand-neon); font-weight: bold;}
+        .faded-word:hover { background-color: var(--brand-neon); color: #fff; }
+        .faded-fixed { background-color: transparent; color: #1e1e24; pointer-events: none; border-bottom: 2px solid #1e1e24; font-weight: bold; padding: 0 4px; text-decoration: underline;}
+
+        /* PADLOCK (Vault Dial) */
+        .vault-dial-container { background: rgba(0,0,0,0.8); border: 2px solid #333; border-radius: 8px; padding: 2rem; box-shadow: inset 0 10px 30px rgba(0,0,0,0.9); display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; position: relative; transition: border-color 0.3s;}
+        .dial-column { background: #111; border: 1px solid #222; border-radius: 4px; width: 180px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 5px 15px rgba(0,0,0,0.8); }
+        .dial-btn { width: 100%; padding: 12px 0; background: #1a1a1a; color: var(--text-muted); text-align: center; cursor: pointer; transition: all 0.2s; font-size: 1rem; }
+        .dial-btn:hover { color: var(--accent-amber); background: rgba(245, 158, 11, 0.1); }
+        .dial-screen { padding: 20px 10px; font-family: var(--font-typewriter); font-size: 1.1rem; font-weight: bold; color: var(--text-main); text-align: center; min-height: 80px; display: flex; align-items: center; justify-content: center;}
+
+        /* TYPEWRITER (GPT Simulator) */
+        .typewriter-container { width: 100%; max-width: 800px; height: 350px; background: #e5e5f7; border: 1px solid #ccc; border-radius: 4px; overflow-y: auto; padding: 30px; display: flex; flex-direction: column; gap: 15px; box-shadow: inset 0 0 30px rgba(0,0,0,0.2); font-family: var(--font-typewriter); color: #1e1e24;}
+        .chat-msg { max-width: 90%; font-size: 1.2rem; line-height: 1.6; animation: popIn 0.3s ease-out;}
+        .chat-msg.user { align-self: flex-end; color: #666; font-style: italic;}
+        .chat-msg.ai { align-self: flex-start; color: #1e1e24; font-weight: bold; border-left: 3px solid var(--brand-neon); padding-left: 15px; min-height: 30px;}
+
+        /* SOUND CHECK (Turing Grid) */
+        .turing-grid { display: flex; gap: 20px; width: 100%; flex-wrap: wrap; justify-content: center;}
+        .turing-card { flex: 1; min-width: 280px; background: rgba(0,0,0,0.6); border: 1px solid var(--text-muted); border-radius: 12px; padding: 25px; display: flex; flex-direction: column; transition: 0.3s; position: relative;}
+        .turing-card::before { content: 'THREAT ASSESSMENT'; position: absolute; top: -10px; left: 20px; background: var(--bg-card); color: var(--accent-amber); padding: 2px 10px; font-size: 0.7rem; font-family: var(--font-typewriter); border-radius: 4px; font-weight: bold; border: 1px solid var(--accent-amber);}
+        .turing-text { font-family: var(--font-ui); font-size: 1.1rem; color: var(--text-main); line-height: 1.6; margin-bottom: 25px; flex: 1; text-align: left; margin-top: 10px;}
+        .turing-opts { display: flex; gap: 10px;}
+        .t-btn { flex: 1; padding: 12px; background: var(--bg-base); border: 1px solid var(--border-soft); color: #fff; font-family: var(--font-display); font-weight: bold; border-radius: 6px; cursor: pointer; transition: 0.2s; font-size: 0.9rem;}
+        .t-btn:hover { background: rgba(220, 38, 38, 0.2); border-color: var(--brand-neon); }
+        .turing-card.solved-human .t-btn.human { background: var(--accent-cyan); color: var(--bg-base); border-color: var(--accent-cyan); pointer-events: none;}
+        .turing-card.solved-ai .t-btn.ai { background: var(--brand-neon); color: var(--bg-base); border-color: var(--brand-neon); pointer-events: none;}
+        .turing-card.solved-human .t-btn.ai, .turing-card.solved-ai .t-btn.human { opacity: 0.2; pointer-events: none;}
+
+        /* STICKY NOTES & BOARD */
+        .sticky-note { padding: 10px 20px; background: #fef08a; color: #000; display: inline-flex; align-items: center; justify-content: center; font-family: 'Caveat', cursive; font-size: 1.5rem; font-weight: bold; cursor: pointer; box-shadow: 2px 4px 10px rgba(0,0,0,0.5); transition: all 0.2s; border-radius: 2px;}
+        .sticky-note:hover { transform: scale(1.05) rotate(-2deg); z-index: 10; box-shadow: 5px 8px 15px rgba(0,0,0,0.6); }
+        .sticky-note.used { opacity: 0; pointer-events: none; transform: scale(0.5); }
+        .cork-board { min-height: 140px; background: #3e2723; border-radius: 4px; box-shadow: inset 0 5px 20px rgba(0,0,0,0.9); display: flex; flex-wrap: wrap; gap: 10px; padding: 20px; align-items: center; justify-content: center; border: 6px solid #271410;}
+        .cork-board .pill-in-zone { background: #fef08a; color: #000; padding: 10px 20px; font-family: 'Caveat', cursive; font-size: 1.5rem; font-weight: bold; box-shadow: 2px 4px 10px rgba(0,0,0,0.5); border-radius: 2px; animation: popIn 0.3s ease; transform: rotate(1deg);}
+
+        /* POLAROIDS (Debate Flip) */
+        .polaroid-card { perspective: 1000px; cursor: pointer; }
+        .polaroid-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1); transform-style: preserve-3d; }
+        .polaroid-card.flipped .polaroid-card-inner { transform: rotateY(180deg); }
+        .polaroid-front, .polaroid-back {
+            position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
+            display: flex; flex-direction: column; padding: 1rem 1rem 3rem 1rem;
+            background-color: #f8fafc; border-radius: 2px; box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+        }
+        .polaroid-front { align-items: center; justify-content: center; }
+        .p-photo { width: 100%; height: 150px; background: #111; display: flex; align-items: center; justify-content: center; margin-bottom: 15px;}
+        .polaroid-back { background: #1a1a1a; transform: rotateY(180deg); color: var(--text-main); align-items: center; justify-content: center; padding: 2rem;}
+
+        /* SURVIVAL SPINNER (Roulette) */
+        .slot-machine { width: 100%; max-width: 600px; margin: 0 auto; background: #000; border: 4px solid #333; border-radius: 8px; padding: 3rem; text-align: center; box-shadow: inset 0 0 30px rgba(0,0,0,0.9), 0 10px 30px rgba(0,0,0,0.8); overflow: hidden; position: relative;}
+        .slot-display { font-family: var(--font-display); font-size: 2.5rem; font-weight: 900; color: var(--brand-neon); transition: 0.1s; position: relative; z-index: 2; text-shadow: 0 0 15px var(--brand-neon);}
+        .slot-display.blur { filter: blur(3px); opacity: 0.5; transform: scale(0.95); }
+
+        /* STAND YOUR GROUND */
+        .syg-statement-box { background: rgba(220, 38, 38, 0.05); padding: 40px; border-radius: 8px; font-size: 2rem; font-weight: 700; margin-bottom: 30px; box-shadow: inset 0 0 30px rgba(0,0,0,0.8); text-align: center; border: 1px dashed var(--border-soft); min-height: 160px; display: flex; align-items: center; justify-content: center; font-family: var(--font-display); color: #fff;}
+        .syg-btn-group { display: flex; gap: 20px; justify-content: center; width: 100%; }
+        .syg-btn { background: #111; border: 1px solid #333; color: var(--text-muted); border-radius: 4px; padding: 15px 30px; font-family: var(--font-display); font-weight: 700; letter-spacing: 1px; font-size: 1.1rem; cursor: pointer; transition: 0.3s; flex: 1; max-width: 200px;}
+        .syg-btn.disagree:hover { border-color: var(--brand-neon); color: var(--brand-neon);}
+        .syg-btn.neutral:hover { border-color: #fff; color: #fff;}
+        .syg-btn.agree:hover { border-color: var(--accent-amber); color: var(--accent-amber);}
+        .syg-btn.selected.disagree { background: var(--brand-neon); border-color: var(--brand-neon); color: #fff; box-shadow: 0 0 20px rgba(220,38,38,0.4); transform: scale(1.05);}
+        .syg-btn.selected.neutral { background: #fff; border-color: #fff; color: #000; box-shadow: 0 0 20px rgba(255,255,255,0.4); transform: scale(1.05);}
+        .syg-btn.selected.agree { background: var(--accent-amber); border-color: var(--accent-amber); color: #000; box-shadow: 0 0 20px rgba(245,158,11,0.4); transform: scale(1.05);}
+        .syg-btn-group.locked .syg-btn:not(.selected) { opacity: 0.2; pointer-events: none;}
+
+        /* WOULD YOU RATHER */
+        .wyr-container { display: flex; gap: 25px; width: 100%; justify-content: center;}
+        .wyr-card { flex: 1; max-width: 350px; padding: 50px 30px; border-radius: 8px; background: rgba(0,0,0,0.8); border: 1px solid #333; cursor: pointer; transition: 0.4s; text-align: center;}
+        .wyr-card:hover { border-color: var(--brand-neon); background: rgba(220, 38, 38, 0.1); transform: translateY(-5px); }
+        .wyr-card.selected { background: var(--brand-neon); border-color: var(--brand-neon); color: #fff; pointer-events: none; box-shadow: 0 10px 30px rgba(220, 38, 38, 0.4);}
+        .wyr-card i { font-size: 4rem; margin-bottom: 25px; color: #555; transition: 0.3s;}
+        .wyr-card:hover i { color: var(--brand-neon); }
+        .wyr-card.selected i { color: #fff; }
+        .wyr-container.locked .wyr-card:not(.selected) { opacity: 0.2; filter: grayscale(100%); pointer-events: none; transform: scale(0.95); }
+
+        /* STARTER CONTENT (Expandable Hint) */
+        .starter-content { max-height: 0; overflow: hidden; transition: max-height 0.4s ease-out; opacity: 0; margin-top: 0; }
+        .starter-content.open { max-height: 500px; opacity: 1; margin-top: 1.5rem; }
+
+        /* FOOTER CONSOLE */
+        #nav-console {
+            position: fixed; bottom: 0; left: 0; width: 100%; height: 75px;
+            background: rgba(5, 5, 5, 0.95); border-top: 1px solid var(--border-soft);
+            display: flex; justify-content: space-between; align-items: center; padding: 0 30px; z-index: 5000; box-shadow: 0 -10px 30px rgba(0,0,0,0.9);
+        }
+
+        /* DRAWERS */
+        .drawer { background: var(--bg-panel); color: var(--text-main); border-left: 1px solid var(--border-soft); transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); z-index: 5100; box-shadow: -20px 0 50px rgba(0,0,0,0.9);}
+        .drawer.active { transform: translateX(0); }
+
+        .fade-in { animation: fadeIn 0.4s ease forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes shake { 10%, 90% { transform: translate3d(-2px, 0, 0); } 20%, 80% { transform: translate3d(3px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-5px, 0, 0); } 40%, 60% { transform: translate3d(5px, 0, 0); } }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: var(--brand-neon); border-radius: 10px; }
+        ::-webkit-scrollbar-track { background: var(--bg-base); }
+    </style>
+</head>
+<body class="flex flex-col h-screen overflow-hidden text-base">
+
+    <!-- HUD SUPERIOR -->
+    <div id="hud-top" class="hidden justify-between items-center w-full">
+        <div class="flex items-center gap-8">
+            <div class="flex flex-col gap-1">
+                <span class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-widest font-typewriter">Sanity (HP)</span>
+                <div class="hud-bar-container"><div id="hp-bar" class="hud-bar-fill bg-[var(--brand-neon)]" style="width: 100%;"></div></div>
+            </div>
+            <div class="flex flex-col gap-1">
+                <span class="text-[9px] font-bold text-[var(--text-muted)] uppercase tracking-widest font-typewriter">Clues (XP)</span>
+                <div class="hud-bar-container"><div id="xp-bar" class="hud-bar-fill bg-[var(--accent-amber)]" style="width: 0%;"></div></div>
+            </div>
+        </div>
+        <div class="text-right flex items-center gap-4">
+            <button onclick="toggleTeacherHUD()" class="px-4 py-1.5 bg-transparent border border-[var(--border-soft)] rounded text-[10px] uppercase tracking-widest text-[var(--brand-neon)] hover:bg-[var(--brand-neon)]/10 transition-all font-bold font-display"><i class="fas fa-eye mr-2"></i>Director</button>
+            <div>
+                <p class="font-display text-xl font-black text-white tracking-widest leading-none uppercase">WOLF LABS</p>
+                <p class="text-[9px] font-bold text-[var(--brand-neon)] tracking-[0.3em] uppercase mt-1 font-typewriter">Level B1 - Survival</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAINEL PRINCIPAL (CAPA) -->
+    <main id="dashboard" class="flex flex-col items-center relative px-8 pt-16 pb-48 z-10 w-full h-screen overflow-y-auto">
+        <button onclick="toggleFullscreen()" class="absolute top-6 right-8 text-[var(--text-muted)] hover:text-[var(--brand-neon)] text-xl z-50 transition-colors" title="Fullscreen"><i class="fas fa-expand"></i></button>
+        <div class="max-w-4xl w-full flex flex-col items-center text-center space-y-6 animate-in fade-in my-auto pb-10">
+            
+            <div class="horror-card p-8 mb-4 mt-10 inline-block shadow-2xl border-t-2 border-[var(--brand-neon)]">
+                <div class="w-24 h-24 bg-black rounded-full flex items-center justify-center overflow-hidden text-[var(--brand-neon)] border border-[var(--border-soft)] shadow-[inset_0_0_20px_rgba(220,38,38,0.4)]">
+                    <i class="fas fa-tree text-4xl"></i>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <p class="text-[var(--brand-neon)] font-bold text-xs tracking-widest uppercase bg-black border border-[var(--border-soft)] px-4 py-1.5 rounded inline-block font-typewriter">Incident Report</p>
+                <h1 class="text-5xl md:text-7xl font-black text-white leading-tight tracking-tight font-display uppercase" style="text-shadow: 0 10px 30px rgba(0,0,0,0.9);">THE BLACKWOOD <br><span class="text-[var(--brand-neon)]">CABIN</span></h1>
+                <p class="text-lg text-[var(--text-muted)] font-medium mt-4 max-w-2xl mx-auto font-typewriter">You and your friends are stranded in an isolated cabin after a storm. The power is out. And someone... or something, is outside.</p>
+            </div>
+            
+            <div class="flex flex-wrap justify-center gap-3 mt-6 font-display text-[10px] font-bold tracking-widest uppercase text-[var(--text-muted)]">
+                <span class="px-3 py-1.5 border border-[var(--border-soft)] rounded">Horror Thriller</span>
+                <span class="px-3 py-1.5 border border-[var(--accent-amber)]/30 text-[var(--accent-amber)] rounded">Narrative Tenses</span>
+                <span class="px-3 py-1.5 border border-[var(--brand-neon)]/30 text-[var(--brand-neon)] rounded">Relative Clauses</span>
+            </div>
+
+            <button onclick="startMission()" class="mt-10 btn-blood px-14 py-4 text-sm shadow-[0_0_30px_rgba(220,38,38,0.2)]">
+                Enter Cabin <i class="fas fa-door-open ml-2"></i>
+            </button>
+        </div>
+    </main>
+
+    <!-- ARENA DE CONTEÚDO DA LIÇÃO -->
+    <main id="mission-arena" class="hidden flex-grow flex-col overflow-hidden relative mt-12">
+        <div id="mission-content" class="flex-grow overflow-y-auto px-4 py-8 flex flex-col items-center w-full"></div>
+    </main>
+
+    <!-- CONSOLA DE NAVEGAÇÃO -->
+    <footer id="nav-console" class="hidden">
+        <div class="flex items-center w-1/4">
+            <button onclick="goHome()" class="text-[var(--text-muted)] hover:text-[var(--brand-neon)] transition-colors p-2" title="Escape"><i class="fas fa-person-running text-xl"></i></button>
+        </div>
+        <div class="flex items-center gap-8 justify-center w-1/2">
+            <button onclick="prevStep()" class="text-[var(--text-muted)] hover:text-white transition-colors p-2"><i class="fas fa-angle-left text-2xl"></i></button>
+            <span id="console-counter" class="text-[10px] font-bold text-[var(--brand-neon)] tracking-[0.3em] uppercase font-typewriter">HOUR 01/25</span>
+            <button onclick="nextStep()" class="text-[var(--text-muted)] hover:text-[var(--brand-neon)] transition-colors p-2"><i class="fas fa-angle-right text-2xl"></i></button>
+        </div>
+        <div class="flex items-center justify-end gap-4 w-1/4">
+            <button onclick="toggleWhiteboard()" class="text-[var(--text-muted)] hover:text-[var(--accent-amber)] transition-colors p-2" title="Flashlight Notes"><i class="fas fa-flashlight text-lg"></i></button>
+            <button onclick="toggleLessonNavigator()" class="text-[var(--text-muted)] hover:text-[var(--brand-neon)] transition-colors p-2" title="Map"><i class="fas fa-map text-lg"></i></button>
+        </div>
+    </footer>
+
+    <!-- DRAWERS -->
+    <aside id="whiteboard" class="fixed right-0 top-0 h-screen w-[400px] drawer flex flex-col pt-16 z-[5100]">
+        <div class="p-6 border-b border-[var(--border-soft)] flex justify-between items-center bg-[var(--bg-panel)]">
+            <h2 class="font-display text-xl font-bold text-[var(--accent-amber)] uppercase tracking-widest"><i class="fas fa-pen-nib mr-2"></i> Survival Notes</h2>
+            <button onclick="toggleWhiteboard()" class="text-[var(--text-muted)] hover:text-white"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="p-4 bg-black flex flex-wrap gap-2 border-b border-[var(--border-soft)]">
+            <button onclick="insertTag('[WAS/WERE]')" class="text-[10px] bg-[#111] border border-[var(--border-soft)] text-[var(--text-muted)] px-3 py-1.5 rounded hover:border-[var(--brand-neon)] hover:text-[var(--brand-neon)] transition-all font-typewriter font-bold uppercase tracking-wider">+ Was/Were</button>
+            <button onclick="insertTag('[WHO/WHICH]')" class="text-[10px] bg-[#111] border border-[var(--border-soft)] text-[var(--text-muted)] px-3 py-1.5 rounded hover:border-[var(--accent-amber)] hover:text-[var(--accent-amber)] transition-all font-typewriter font-bold uppercase tracking-wider">+ Rel. Clause</button>
+        </div>
+        <textarea id="wb-text" class="flex-grow bg-black text-[var(--accent-amber)] p-8 resize-none focus:outline-none font-typewriter text-sm leading-relaxed" placeholder="> Jot down clues here..."></textarea>
+    </aside>
+
+    <aside id="lesson-navigator" class="fixed right-0 top-0 h-screen w-[320px] drawer flex flex-col pt-16 z-[5100]">
+        <div class="p-6 border-b border-[var(--border-soft)] flex justify-between items-center bg-[var(--bg-panel)]">
+            <h2 class="font-display text-xl font-bold text-white uppercase tracking-widest">Floor Plan</h2>
+            <button onclick="toggleLessonNavigator()" class="text-[var(--text-muted)] hover:text-white"><i class="fas fa-times"></i></button>
+        </div>
+        <div id="nav-steps-list" class="flex-grow overflow-y-auto p-4 space-y-2 bg-black"></div>
+    </aside>
+
+    <aside id="teacher-hud" class="fixed right-0 top-0 h-screen w-[350px] drawer flex flex-col pt-16 z-[5100]">
+        <div class="p-6 border-b border-[var(--border-soft)] flex justify-between items-center bg-[var(--bg-panel)]">
+            <h2 class="font-display text-xl font-bold text-[var(--brand-neon)] uppercase tracking-widest"><i class="fas fa-eye mr-2"></i> Director Mode</h2>
+            <button onclick="toggleTeacherHUD()"><i class="fas fa-times text-[var(--text-muted)] hover:text-white"></i></button>
+        </div>
+        <div class="flex-grow overflow-y-auto p-6 space-y-6 bg-black">
+            <div class="bg-[var(--bg-panel)] p-5 rounded border border-[var(--border-soft)] shadow-inner">
+                <p class="text-[10px] font-bold text-[var(--brand-neon)] uppercase tracking-widest mb-2 font-typewriter">Lesson Goal</p>
+                <p class="text-sm text-[var(--text-muted)] leading-relaxed font-typewriter">Level B1. Tell scary stories. Narrative Tenses (Past Simple vs Past Continuous) for interrupted actions. Relative Clauses (Who, Which, Where) to add chilling details.</p>
+            </div>
+            <div>
+                <p class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-3 font-typewriter">Send Praise</p>
+                <div class="space-y-3">
+                    <button onclick="triggerPraise('SURVIVOR INSTINCT', 'Perfect Tense Usage.')" class="w-full py-3 bg-transparent text-[var(--accent-amber)] border border-[var(--accent-amber)] rounded font-bold text-xs hover:bg-[var(--accent-amber)] hover:text-black transition-all uppercase tracking-widest font-display">SEND: AMBER</button>
+                    <button onclick="triggerPraise('BRAVE SOUL', 'Excellent details added.')" class="w-full py-3 bg-[var(--brand-neon)] text-white border border-transparent rounded font-bold text-xs hover:brightness-110 transition-all uppercase tracking-widest font-display">SEND: BLOOD</button>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Overlay de Elogio -->
+    <div id="praise-overlay" class="fixed inset-0 z-[6000] flex items-center justify-center bg-black/90 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300 p-4">
+        <div id="praise-card" class="horror-card p-16 text-center transform scale-50 transition-transform duration-500 border-2 shadow-[0_0_50px_rgba(220,38,38,0.2)] max-w-xl w-full">
+            <i id="praise-icon" class="fas fa-fire text-6xl text-[var(--brand-neon)] mb-6 drop-shadow-[0_0_15px_rgba(220,38,38,0.5)]"></i>
+            <h2 id="praise-main" class="font-display text-4xl md:text-5xl font-black tracking-widest uppercase mb-4 text-[var(--brand-neon)]"></h2>
+            <p id="praise-sub" class="text-sm font-bold text-[var(--text-muted)] tracking-widest uppercase font-typewriter"></p>
+        </div>
+    </div>
+
+    <!-- SCRIPT DO MOTOR PRINCIPAL -->
+    <script>
+        let state = { hp: 100, xp: 0, current: 0 };
+        const esc = (s) => s ? s.replace(/'/g, "\\'").replace(/"/g, "&quot;") : "";
+        
+        const TYPES = { COVER: "Intro", WARMUP: "Fear", STORY: "Lore", VOCAB: "Terms", GRAMMAR: "Rule", DRILL: "QA", BUILDER: "Draft", MATCH: "Logic", READER: "Diary", SPEAKING: "Voice", WRAP: "Escape", TUNER: "Patch", CUSTOM: "Event" };
+        function step(type, title, html) { return { type, title, html }; }
+
+        function updateHUD() {
+            const h = document.getElementById('hp-bar'); if(h) h.style.width = Math.max(0, state.hp) + '%';
+            const x = document.getElementById('xp-bar'); if(x) x.style.width = Math.min(100, (state.xp / 100) * 100) + '%';
+        }
+        function insertTag(tag) { const text = document.getElementById('wb-text'); if (text) { text.value += (text.value.length > 0 ? '\n' : '') + tag + ' '; text.focus(); } }
+
+        // --- TEMPLATES ---
+        const bGuide = (title, points) => step(TYPES.COVER, title, `
+            <div class="max-w-3xl mx-auto space-y-8 animate-in fade-in py-10">
+                <div class="horror-card border-t-2 border-[var(--brand-neon)]">
+                    <p class="text-[var(--brand-neon)] font-bold uppercase tracking-[0.3em] text-xs mb-6 font-typewriter text-center">
+                        <i class="fas fa-skull text-lg mb-2 block"></i> Survival Guide
+                    </p>
+                    <h2 class="font-display text-4xl md:text-5xl font-black text-white text-center mb-10 pb-8 border-b border-[var(--border-soft)] uppercase tracking-widest">${title}</h2>
+                    <div class="space-y-6 px-4">
+                        ${points.map(p => `<p class="text-lg text-[var(--text-main)] flex items-start gap-4 font-ui font-medium leading-relaxed"><i class="fas fa-tint text-[var(--brand-neon)] mt-1.5"></i> ${p}</p>`).join('')}
+                    </div>
+                </div>
+            </div>
+        `);
+
+        const bSlider = (title, prompt, minL, maxL, followup, starter) => step(TYPES.WARMUP, title, `
+            <div class="max-w-3xl mx-auto flex flex-col items-center justify-center min-h-[50vh] text-center space-y-8 animate-in fade-in">
+                <p class="text-[10px] font-bold text-[var(--accent-amber)] uppercase tracking-widest bg-[var(--bg-panel)] border border-[var(--border-soft)] px-4 py-1.5 rounded font-typewriter">Adrenaline Check</p>
+                <h2 class="font-display text-4xl font-bold text-white tracking-widest uppercase">${prompt}</h2>
+                
+                <div class="w-full horror-card py-12 flex flex-col items-center mt-4 border-t-2 border-[var(--accent-amber)]">
+                    <div class="text-6xl font-display font-bold text-[var(--accent-amber)] mb-8" id="display-val">50%</div>
+                    <div class="w-full px-8 relative">
+                        <input type="range" min="0" max="100" value="50" class="horror-slider" style="--brand-neon: var(--accent-amber); --brand-glow: rgba(245, 158, 11, 0.4);" oninput="document.getElementById('display-val').innerText = this.value + '%'">
+                    </div>
+                    <div class="flex justify-between w-full px-8 mt-6 text-xs font-bold text-[var(--text-muted)] font-typewriter uppercase tracking-widest">
+                        <span>${minL}</span>
+                        <span>${maxL}</span>
+                    </div>
+                </div>
+                
+                <div class="w-full max-w-3xl p-8 mt-8 text-left border-l-4 border-[var(--brand-neon)] bg-[var(--bg-panel)] rounded-lg">
+                    <p class="text-[10px] font-bold text-[var(--brand-neon)] uppercase tracking-widest mb-4 font-typewriter">Director's Cut</p>
+                    <p class="text-xl font-bold text-white mb-4">${followup}</p>
+                    <div class="bg-black p-4 rounded border border-white/10">
+                        <p class="text-lg font-medium text-[var(--accent-amber)] font-typewriter">"${starter}"</p>
+                    </div>
+                </div>
+            </div>
+        `);
+
+        const bStoryCard = (title, chapter, text, question) => step(TYPES.STORY, title, `
+            <div class="max-w-4xl mx-auto flex flex-col items-center py-10 animate-in fade-in min-h-[60vh] justify-center">
+                <p class="text-[10px] font-bold text-[var(--brand-neon)] uppercase tracking-widest mb-4 font-typewriter"><i class="fas fa-book-open mr-2"></i> Chapter ${chapter}</p>
+                <h2 class="font-display text-4xl font-black text-white tracking-widest uppercase mb-8 text-center">${title}</h2>
+                <div class="w-full bg-black border border-[var(--border-soft)] p-10 rounded shadow-[0_0_30px_rgba(220,38,38,0.15)] relative">
+                    <i class="fas fa-quote-left absolute top-6 left-6 text-4xl text-[var(--brand-neon)] opacity-20"></i>
+                    <p class="text-xl text-[var(--text-main)] leading-loose font-typewriter relative z-10 text-center mb-8 px-6">${text}</p>
+                    <div class="border-t border-[var(--border-soft)] pt-6 mt-6">
+                        <p class="text-center text-[var(--accent-amber)] font-bold uppercase tracking-widest font-ui text-sm">${question}</p>
+                    </div>
+                </div>
+                <div class="mt-8 text-[var(--text-muted)] text-sm font-typewriter animate-pulse">Press NEXT to continue...</div>
+            </div>
+        `);
+
+        const bVocabDrag = (id, title, instruction, items, followup) => {
+            let words = shuffleArray([...items]).map(w => `
+                <div class="drag-word" draggable="true" ondragstart="dragVocab(event, this)" ondragend="this.classList.remove('dragging')" data-word="${esc(w.word)}">
+                    <i class="fas fa-spider mr-2 opacity-50 text-[var(--brand-neon)]"></i>${w.word}
+                </div>
+            `).join('');
+
+            let dropzones = items.map((w, i) => `
+                <div class="drop-zone" data-expected="${esc(w.word)}" ondrop="dropVocab(event, this)" ondragover="allowDropVocab(event)" ondragleave="leaveDropVocab(event)">
+                    <p class="text-[var(--text-main)] font-medium text-lg leading-relaxed font-ui">"${w.def}"</p>
+                    <div class="drop-area">
+                        <span class="text-xs font-typewriter text-[var(--text-muted)] uppercase tracking-widest pointer-events-none">Drop Item</span>
+                    </div>
+                </div>
+            `).join('');
+
+            return step(TYPES.VOCAB, title, `
+                <div class="max-w-5xl mx-auto w-full flex flex-col items-center py-10 animate-in fade-in" id="vocab-container-${id}">
+                    <p class="text-[10px] font-bold text-[var(--accent-cyan)] uppercase tracking-[0.4em] mb-4 bg-[var(--accent-cyan)]/10 px-4 py-1.5 rounded border border-[var(--accent-cyan)]/30 font-typewriter shadow-sm"><i class="fas fa-toolbox mr-2"></i> Inventory</p>
+                    <h2 class="font-display text-4xl font-black text-white tracking-widest mb-4 text-center uppercase">${title}</h2>
+                    <p class="text-[var(--text-muted)] text-lg mb-10 text-center max-w-2xl">${instruction}</p>
+                    
+                    <div class="w-full max-w-4xl mb-8 p-6 bg-[var(--bg-panel)] border border-[var(--border-soft)] rounded-lg shadow-inner">
+                        <p class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-4 font-typewriter">Items around the cabin</p>
+                        <div class="vocab-bank flex flex-wrap gap-4 min-h-[60px] items-center justify-center">
+                            ${words}
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-4xl">
+                        ${dropzones}
+                    </div>
+
+                    <div class="vocab-followup hidden w-full max-w-4xl mt-10 bg-[var(--bg-panel)] border-l-4 border-[var(--brand-neon)] p-6 rounded shadow-md relative overflow-hidden">
+                        <p class="text-[10px] font-bold text-[var(--brand-neon)] uppercase tracking-widest mb-3 font-typewriter"><i class="fas fa-comment-dots mr-2"></i> Director Query</p>
+                        <p class="text-xl font-bold text-white leading-relaxed font-ui">"${followup}"</p>
+                    </div>
+                </div>
+            `);
+        };
+
+        const bGrammar = (title, rule, examples, tagColor="var(--brand-neon)") => step(TYPES.GRAMMAR, title, `
+            <div class="max-w-4xl mx-auto space-y-8 animate-in fade-in py-10">
+                <div class="text-center space-y-3 mb-12">
+                    <p class="text-[10px] font-bold text-[var(--bg-base)] uppercase tracking-[0.4em] inline-block px-4 py-1.5 rounded font-typewriter shadow-sm" style="background-color: ${tagColor}">Lore Rules</p>
+                    <h2 class="font-display text-4xl md:text-5xl font-black text-white tracking-widest uppercase">${title}</h2>
+                </div>
+                <div class="horror-card border-t-2 p-10 text-center" style="border-top-color: ${tagColor}">
+                    <p class="text-2xl text-[var(--text-main)] font-medium leading-loose font-ui">${rule.replace(/\[(.*?)\]/g, `<span style="color: ${tagColor}" class="font-bold bg-black/50 px-3 py-1 rounded border border-white/10 font-typewriter text-xl">$1</span>`)}</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                    ${examples.map(ex => `
+                        <div class="bg-[var(--bg-panel)] border border-[var(--border-soft)] p-8 rounded text-center">
+                            <p class="text-[10px] font-bold uppercase text-[var(--text-muted)] tracking-widest mb-4 font-typewriter">${ex.context}</p>
+                            <p class="text-xl font-bold text-white font-ui">"${ex.text.replace(/\[(.*?)\]/g, `<span style="color: ${tagColor}">$1</span>`)}"</p>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `);
+
+        const bTuner = (id, title, instruction, textAff, textAlt, feedback, tagColor="var(--brand-neon)") => step(TYPES.TUNER, title, `
+            <div class="max-w-4xl mx-auto flex flex-col items-center justify-center min-h-[60vh] text-center space-y-10 animate-in fade-in py-10">
+                <p class="text-[10px] font-bold text-[var(--bg-base)] uppercase tracking-[0.4em] inline-block px-4 py-1.5 rounded font-typewriter shadow-sm" style="background-color: ${tagColor}">Memory Repair</p>
+                <h2 class="text-4xl font-black text-white tracking-widest uppercase font-display">${title}</h2>
+                <p class="text-lg text-[var(--text-muted)] max-w-2xl">${instruction}</p>
+                
+                <div class="w-full max-w-2xl horror-card flex flex-col items-center py-12">
+                    <div class="flex items-center gap-6 mb-12">
+                        <span class="font-typewriter font-bold text-[var(--text-muted)] text-xs w-28 text-right uppercase tracking-widest" id="mode-aff-${id}">Error (L1)</span>
+                        <div class="tuner-track" id="tuner-track-${id}" onclick="toggleTuner('${id}', '${esc(textAff)}', '${esc(textAlt)}', '${esc(feedback)}', '${tagColor}')">
+                            <div class="tuner-knob"></div>
+                        </div>
+                        <span class="font-typewriter font-bold text-[var(--text-main)] text-xs w-28 text-left uppercase tracking-widest" id="mode-alt-${id}">Fix (Native)</span>
+                    </div>
+
+                    <div class="bg-black w-full p-8 rounded border border-[var(--border-soft)] flex items-center justify-center min-h-[120px] shadow-inner">
+                        <p id="tuner-text-${id}" class="text-2xl font-ui font-bold tracking-wide transition-opacity duration-300 text-[var(--brand-neon)]">${textAff.replace(/\[(.*?)\]/g, `<span class="border-b-2 border-[var(--brand-neon)]/50 pb-1">$1</span>`)}</p>
+                    </div>
+                    
+                    <div id="tuner-fb-${id}" class="hidden mt-8 text-sm font-bold text-[var(--accent-amber)] font-typewriter uppercase tracking-widest">
+                        <i class="fas fa-check-circle mr-2"></i> ${feedback}
+                    </div>
+                </div>
+            </div>
+        `);
+
+        const bLogicGate = (id, title, instruction, pairs) => {
+            let lefts = pairs.map((p, i) => ({text: p.left, id: i, type: 'L'}));
+            let rights = pairs.map((p, i) => ({text: p.right, id: i, type: 'R'}));
+            lefts = shuffleArray(lefts); rights = shuffleArray(rights);
+
+            const buildNodes = (arr) => arr.map(item => `
+                <div class="logic-node" data-id="${item.id}" data-type="${item.type}" onclick="handleMatch(this)">${item.text}</div>
+            `).join('');
+
+            return step(TYPES.MATCH, title, `
+                <div class="max-w-5xl mx-auto w-full flex flex-col items-center py-10 animate-in fade-in">
+                    <p class="text-[10px] font-bold text-[var(--accent-amber)] uppercase tracking-widest mb-4 bg-[var(--accent-amber)]/10 px-4 py-1.5 rounded font-typewriter border border-[var(--accent-amber)]/30"><i class="fas fa-link mr-2"></i> Chain of Events</p>
+                    <h2 class="font-display text-4xl font-black text-white tracking-widest uppercase mb-6 text-center">${title}</h2>
+                    <p class="text-[var(--text-muted)] text-lg mb-12 text-center">${instruction}</p>
+                    
+                    <div class="w-full max-w-4xl bg-black/50 p-10 rounded-xl border border-[var(--border-soft)] relative" id="match-board">
+                        <div class="grid grid-cols-2 gap-16 w-full relative z-10">
+                            <div class="flex flex-col gap-6" id="match-left">${buildNodes(lefts)}</div>
+                            <div class="flex flex-col gap-6" id="match-right">${buildNodes(rights)}</div>
+                        </div>
+                    </div>
+                    <div id="match-hub" class="hidden mt-8 text-[var(--brand-neon)] text-sm font-bold font-typewriter uppercase tracking-widest bg-[var(--brand-neon)]/10 px-6 py-3 rounded border border-[var(--brand-neon)]/30"><i class="fas fa-check-circle mr-2"></i> Timeline Synced.</div>
+                </div>
+            `);
+        }
+
+        const bRadioSimulator = (title, instruction) => step(TYPES.CUSTOM, title, `
+            <div class="max-w-4xl mx-auto flex flex-col items-center py-10 animate-in fade-in">
+                <p class="text-[10px] font-bold text-[#22c55e] uppercase tracking-widest mb-4 bg-[#22c55e]/10 px-4 py-1.5 rounded border border-[#22c55e]/30 font-typewriter"><i class="fas fa-broadcast-tower mr-2"></i> Radio Frequency</p>
+                <h2 class="font-display text-4xl font-black text-white tracking-widest uppercase mb-4 text-center">${title}</h2>
+                <p class="text-[var(--text-muted)] text-lg mb-10 text-center">${instruction}</p>
+                
+                <div class="radio-sim" id="radio-sim">
+                    <div class="radio-screen static" id="radio-screen">104.5 FM</div>
+                    <div class="radio-controls">
+                        <div class="dial" onclick="tuneRadio(-1)"></div>
+                        <div class="dial" onclick="tuneRadio(1)"></div>
+                    </div>
+                </div>
+
+                <div class="hidden w-full max-w-3xl mt-10 bg-[var(--bg-panel)] border-l-4 border-[var(--brand-neon)] p-6 rounded shadow-md" id="hub-radio">
+                    <div class="bg-black/50 p-6 rounded border border-white/10 mt-4 text-center">
+                        <p class="text-[10px] text-[var(--text-muted)] font-typewriter mb-2 animate-pulse">DECRYPTING SIGNAL...</p>
+                        <p class="text-3xl font-black text-[var(--brand-neon)] font-typewriter tracking-[0.2em] animate-pulse">"HE IS ALREADY INSIDE"</p>
+                    </div>
+                    <p class="text-xl font-bold text-white leading-relaxed font-ui mt-6 mb-4 text-center">"What was the radio saying? Can you read it out loud?"</p>
+                </div>
+            </div>
+        `);
+
+        const bRedactedNotes = (id, title, instruction, text, expectedFixes) => {
+            let expectedFixesCopy = [...expectedFixes]; 
+            let htmlText = text.replace(/\[(.*?)\]/g, (match, word) => {
+                const fixData = expectedFixesCopy.shift();
+                return `<span class="faded-word" onclick="triggerFixer(this, '${esc(fixData)}')">${word}</span>`;
+            });
+
+            return step(TYPES.DRILL, title, `
+                <div class="max-w-4xl mx-auto w-full flex flex-col items-center py-10 animate-in fade-in">
+                    <p class="text-[10px] font-bold text-[var(--brand-neon)] uppercase tracking-widest mb-4 font-typewriter bg-[var(--brand-neon)]/10 px-4 py-1.5 rounded border border-[var(--border-soft)]"><i class="fas fa-book-dead mr-2"></i> Torn Diary</p>
+                    <h2 class="text-4xl font-black text-white tracking-widest uppercase mb-6 text-center font-display">${title}</h2>
+                    <p class="text-[var(--text-muted)] text-lg mb-10 text-center">${instruction}</p>
+                    
+                    <div class="w-full diary-page relative overflow-hidden">
+                        <p>August 14th, 1992</p><br>
+                        ${htmlText}
+                        <div id="fix-panel" class="absolute bottom-0 left-0 w-full bg-[#111] border-t-2 border-[var(--brand-neon)] p-6 transform translate-y-full transition-transform duration-300 flex items-center gap-4 z-20">
+                            <span class="text-[var(--brand-neon)] text-xs uppercase tracking-widest font-bold font-typewriter">Restore Text:</span>
+                            <input type="text" id="fix-input" class="bg-[#222] color-white border border-[#444] rounded px-4 py-3 flex-1 text-lg focus:outline-none focus:border-[var(--brand-neon)] font-typewriter text-white" autocomplete="off">
+                            <button onclick="submitFixer()" class="btn-blood px-8 py-3 text-sm">Scribe</button>
+                        </div>
+                    </div>
+                    <div id="fixer-hub" class="hidden mt-8 text-[var(--accent-amber)] text-xs font-typewriter font-bold uppercase tracking-widest bg-[var(--accent-amber)]/10 px-4 py-2 border border-[var(--accent-amber)]/30 rounded"><i class="fas fa-check mr-2"></i> Entry Restored.</div>
+                </div>
+            `);
+        }
+
+        const bEerieSounds = (id, title, texts) => step(TYPES.CUSTOM, title, `
+            <div class="max-w-5xl mx-auto flex flex-col items-center py-10 animate-in fade-in">
+                <p class="text-[10px] font-bold text-[var(--accent-cyan)] uppercase tracking-widest mb-4 bg-[var(--accent-cyan)]/10 px-4 py-1.5 rounded border border-[var(--accent-cyan)]/30 font-typewriter"><i class="fas fa-ear-listen mr-2"></i> Threat Assessment</p>
+                <h2 class="font-display text-4xl font-black text-white tracking-widest uppercase mb-4 text-center">${title}</h2>
+                <p class="text-[var(--text-muted)] text-lg mb-10 text-center max-w-2xl">Read the descriptions of the sounds outside. Identify if it's a NATURAL sound or a SUPERNATURAL entity.</p>
+                
+                <div class="turing-grid">
+                    ${texts.map((t, idx) => `
+                        <div class="turing-card" id="turing-${id}-${idx}">
+                            <div class="turing-text">"${t.text}"</div>
+                            <div class="turing-opts">
+                                <button class="t-btn human" onclick="guessTuring(this, ${t.isNatural}, 'turing-${id}-${idx}')">NATURAL</button>
+                                <button class="t-btn ai" onclick="guessTuring(this, ${!t.isNatural}, 'turing-${id}-${idx}')">SUPERNATURAL</button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <div class="hidden w-full max-w-4xl mt-10 bg-[var(--bg-panel)] border-l-4 border-[var(--brand-neon)] p-6 rounded shadow-md" id="hub-turing-${id}">
+                    <p class="text-[10px] font-bold text-[var(--brand-neon)] uppercase tracking-widest mb-3 font-typewriter"><i class="fas fa-comment-dots mr-2"></i> Director Query</p>
+                    <p class="text-xl font-bold text-white leading-relaxed font-ui mb-4">"You identified the supernatural entity! How did you know it wasn't the wind?"</p>
+                    <div class="bg-black/50 p-4 rounded border border-white/10">
+                        <p class="text-lg font-medium text-[var(--text-main)] font-typewriter">"Because the wind can't..."</p>
+                    </div>
+                </div>
+            </div>
+        `);
+
+        const bVaultDial = (id, title, instruction, clue, dials, correctCombo) => {
+            const dialsData = JSON.stringify(dials).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+            const correctData = JSON.stringify(correctCombo);
+            
+            let dialHTML = dials.map((dialOptions, colIndex) => `
+                <div class="dial-column">
+                    <div class="dial-btn up" onclick="changeDial('${id}', ${colIndex}, -1)"><i class="fas fa-chevron-up"></i></div>
+                    <div class="dial-screen" id="dial-screen-${id}-${colIndex}">${dialOptions[0]}</div>
+                    <div class="dial-btn down" onclick="changeDial('${id}', ${colIndex}, 1)"><i class="fas fa-chevron-down"></i></div>
+                </div>
+            `).join('');
+
+            return step(TYPES.DRILL, title, `
+                <div class="max-w-4xl mx-auto flex flex-col items-center justify-center min-h-[60vh] text-center space-y-10 animate-in fade-in py-10" id="vault-data-${id}" data-dials="${dialsData}" data-correct="${correctData}">
+                    <p class="text-[10px] font-bold text-[#94a3b8] uppercase tracking-widest inline-block px-4 py-1.5 rounded font-typewriter shadow-sm bg-[#333] border border-[#555]"><i class="fas fa-lock mr-2"></i> Cellar Padlock</p>
+                    <h2 class="text-4xl font-black text-white tracking-widest uppercase font-display">${title}</h2>
+                    <p class="text-lg text-[var(--text-muted)] max-w-2xl">${instruction}</p>
+                    
+                    <div class="w-full max-w-3xl horror-card flex flex-col items-center py-12">
+                        <p class="font-typewriter text-xl text-[var(--accent-amber)] mb-8">Clue: "${clue}"</p>
+                        
+                        <div class="vault-dial-container mb-12">
+                            ${dialHTML}
+                        </div>
+                        
+                        <button onclick="verifyVault('${id}')" class="btn-amber px-12 py-3 text-sm">Unlock Door</button>
+                        
+                        <div id="vault-fb-${id}" class="hidden mt-8 text-sm font-bold text-[var(--brand-neon)] font-typewriter uppercase tracking-widest">
+                            <i class="fas fa-door-open mr-2"></i> Click... The cellar door is open.
+                        </div>
+                    </div>
+                </div>
+            `);
+        };
+
+        const bGPTSimulator = (id, title, instruction) => step(TYPES.CUSTOM, title, `
+            <div class="max-w-4xl mx-auto flex flex-col items-center py-10 animate-in fade-in">
+                <p class="text-[10px] font-bold text-[var(--accent-cyan)] uppercase tracking-widest mb-4 bg-[var(--accent-cyan)]/10 px-4 py-1.5 rounded border border-[var(--accent-cyan)]/30 font-typewriter"><i class="fas fa-ghost mr-2"></i> Spirit Board</p>
+                <h2 class="font-display text-4xl font-black text-white tracking-widest uppercase mb-4 text-center">${title}</h2>
+                <p class="text-[var(--text-muted)] text-lg mb-10 text-center">${instruction}</p>
+                
+                <div class="typewriter-container" id="ai-chat-box-${id}">
+                    <div class="chat-msg ai" style="border-color: #333; color: #111;">... I AM HERE ...</div>
+                </div>
+
+                <button class="btn-blood px-10 py-3 mt-6" id="prompt-btn-${id}" onclick="triggerSpiritTyping('${id}')">ASK: "Who are you?"</button>
+
+                <div class="hidden w-full max-w-3xl mt-10 bg-[var(--bg-panel)] border-l-4 border-[var(--brand-neon)] p-6 rounded shadow-md" id="ai-followup-${id}">
+                    <p class="text-[10px] font-bold text-[var(--brand-neon)] uppercase tracking-widest mb-3 font-typewriter"><i class="fas fa-comment-dots mr-2"></i> Director Query</p>
+                    <p class="text-xl font-bold text-white leading-relaxed font-ui mb-4">"The entity responded! What did it say?"</p>
+                    <div class="bg-black/50 p-4 rounded border border-white/10">
+                        <p class="text-lg font-medium text-[var(--accent-amber)] font-typewriter">"It said that it was the man who..."</p>
+                    </div>
+                </div>
+            </div>
+        `);
+
+        function bStickyNotes(id, title, instruction, expectedArr, followup, starter) {
+            const expectedStr = JSON.stringify(expectedArr).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+            let wordBtns = shuffleArray([...expectedArr]).map(w => `<span class="sticky-note" onclick="moveSticky(this, '${esc(w)}', '${id}')">${w}</span>`).join('');
+            return step(TYPES.BUILDER, title, `
+                <div class="max-w-4xl mx-auto w-full flex flex-col items-center py-10 animate-in fade-in" data-expected="${expectedStr}" id="st-data-${id}">
+                    <p class="text-[10px] font-bold text-[#fef08a] uppercase tracking-[0.4em] mb-4 bg-[#fef08a]/10 px-4 py-1.5 rounded border border-[#fef08a]/30 font-typewriter shadow-sm"><i class="fas fa-thumbtack mr-2"></i> Cork Board</p>
+                    <h2 class="font-display text-4xl font-black text-white tracking-widest mb-8 text-center uppercase">${title}</h2>
+                    <p class="text-[var(--text-muted)] text-lg mb-12 text-center">${instruction}</p>
+                    
+                    <div class="w-full horror-card text-center pb-12 border-t-2 border-[#fef08a]">
+                        <div class="cork-board" id="st-dropzone-${id}"></div>
+                        <div class="flex justify-center flex-wrap gap-4 mt-12" id="st-bank-${id}">
+                            ${wordBtns}
+                        </div>
+                        <button onclick="resetSticky('${id}')" class="mt-12 text-xs font-bold text-[var(--text-muted)] hover:text-white uppercase tracking-widest transition font-typewriter"><i class="fas fa-undo mr-2"></i>Reset Board</button>
+                    </div>
+                
+                <div id="st-fb-${id}" class="hidden mt-8 w-full max-w-4xl p-6 bg-[var(--brand-neon)] rounded shadow-md text-left">
+                    <p class="font-bold font-typewriter text-xs text-white uppercase tracking-widest border-b border-white/20 pb-2 mb-4">> MESSAGE LOGGED</p>
+                    ${followup ? `<p class="text-xl font-bold font-ui mb-2 text-white">${followup}</p>` : ''}
+                    ${starter ? `<p class="text-white/80 font-typewriter text-lg">"${starter}"</p>` : ''}
+                </div>
+            </div>
+        `);
+        }
+
+        const bRoleplay = (title, prompt, hint) => step(TYPES.SPEAKING, title, `
+            <div class="max-w-4xl mx-auto w-full flex flex-col items-center justify-center min-h-[60vh] text-center animate-in fade-in py-10 relative">
+                <div class="w-32 h-32 bg-black border border-[var(--border-soft)] rounded-full flex items-center justify-center mb-8 shadow-[0_0_30px_rgba(220,38,38,0.3)]"><i class="fas fa-phone-volume text-5xl text-[var(--brand-neon)] animate-pulse"></i></div>
+                <p class="text-[10px] font-bold text-[var(--brand-neon)] uppercase tracking-widest mb-4 bg-[var(--brand-neon)]/10 border border-[var(--brand-neon)]/30 px-5 py-2 rounded font-typewriter">Distress Call</p>
+                <h2 class="font-display text-4xl md:text-5xl font-black tracking-widest text-white leading-tight mb-12 uppercase">${prompt}</h2>
+                
+                <div class="w-full horror-card text-left border-l-4 border-[var(--brand-neon)]">
+                    <div class="flex justify-between items-center cursor-pointer" onclick="toggleStarter(this)">
+                        <div class="flex items-center gap-4">
+                            <i class="fas fa-lightbulb text-[var(--brand-neon)] text-3xl"></i>
+                            <span class="font-bold text-white tracking-widest uppercase text-xl font-ui">Show Script (Click)</span>
+                        </div>
+                        <i class="fas fa-chevron-down text-slate-500"></i>
+                    </div>
+                    <div class="starter-content text-left">
+                        <div class="bg-black p-8 rounded border border-[var(--border-soft)]">
+                            <p class="text-xl font-bold text-[var(--accent-amber)] leading-relaxed font-typewriter whitespace-pre-line">${hint}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `);
+
+        const bDebateFlip = (title, instruction, cards) => step(TYPES.SPEAKING, title, `
+            <div class="max-w-4xl mx-auto flex flex-col items-center py-10 animate-in fade-in">
+                <p class="text-[10px] font-bold text-[var(--text-main)] uppercase tracking-widest mb-4 font-typewriter bg-[#333] px-4 py-1.5 border border-[#555] rounded"><i class="fas fa-camera mr-2"></i> Polaroids</p>
+                <h2 class="font-display text-4xl font-black text-white tracking-widest uppercase mb-6 text-center">${title}</h2>
+                <p class="text-[var(--text-muted)] text-lg mb-12 text-center">${instruction}</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl">
+                    ${cards.map((card, idx) => `
+                        <div class="polaroid-card w-full min-h-[250px]" onclick="this.classList.toggle('flipped')">
+                            <div class="polaroid-card-inner">
+                                <div class="polaroid-front">
+                                    <div class="p-photo"><i class="fas fa-ghost text-5xl text-[#333]"></i></div>
+                                    <p class="font-ui text-black font-bold tracking-widest uppercase text-xl">Photo ${idx + 1}</p>
+                                </div>
+                                <div class="polaroid-back">
+                                    <p class="text-xl font-ui font-bold text-white leading-relaxed">"${card}"</p>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `);
+
+        const bActionSpinner = (id, title, instruction, items) => {
+            const itemsStr = JSON.stringify(items).replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+            return step(TYPES.CUSTOM, title, `
+                <div class="max-w-4xl mx-auto flex flex-col items-center py-10 animate-in fade-in" id="spin-container-${id}" data-items="${itemsStr}">
+                    <p class="text-[10px] font-bold text-[var(--brand-neon)] uppercase tracking-widest mb-4 bg-[var(--brand-neon)]/10 px-4 py-1.5 border border-[var(--brand-neon)]/30 rounded font-typewriter"><i class="fas fa-dice mr-2"></i> Fate Generator</p>
+                    <h2 class="font-display text-4xl font-black text-white tracking-widest uppercase mb-6 text-center">${title}</h2>
+                    <p class="text-[var(--text-muted)] text-lg mb-12 text-center">${instruction}</p>
+                    
+                    <div class="slot-machine">
+                        <div id="slot-display-${id}" class="slot-display">SPIN TO SURVIVE</div>
+                    </div>
+                    <button class="btn-blood px-12 py-4 mt-8 text-lg" id="spin-btn-${id}" onclick="spinAction('${id}')">SPIN</button>
+
+                    <div class="hidden w-full max-w-3xl mt-10 bg-[var(--bg-panel)] border-l-4 border-[var(--brand-neon)] p-6 rounded shadow-md" id="hub-spin-${id}">
+                        <p class="text-[10px] font-bold text-[var(--brand-neon)] uppercase tracking-widest mb-3 font-typewriter"><i class="fas fa-comment-dots mr-2"></i> Director Query</p>
+                        <p class="text-xl font-bold text-white leading-relaxed font-ui mb-4">"Oh no! What were you doing when this happened?"</p>
+                        <div class="bg-black/50 p-4 rounded border border-white/10">
+                            <p class="text-lg font-medium text-[var(--accent-amber)] font-typewriter">"I was (verb+ing) when the..."</p>
+                        </div>
+                    </div>
+                </div>
+            `);
+        };
+
+        const bStandYourGround = (id, title, statement) => step(TYPES.CUSTOM, title, `
+            <div class="max-w-5xl mx-auto flex flex-col items-center py-10 animate-in fade-in">
+                <p class="text-[10px] font-bold text-[var(--accent-amber)] uppercase tracking-widest mb-4 bg-[var(--accent-amber)]/10 px-4 py-1.5 border border-[var(--accent-amber)]/30 rounded font-typewriter"><i class="fas fa-balance-scale mr-2"></i> Survival Instincts</p>
+                <h2 class="font-display text-4xl font-black text-white tracking-widest uppercase mb-6 text-center">${title}</h2>
+                <p class="text-[var(--text-muted)] text-lg mb-12 text-center">Defend your position regarding this horror movie cliché.</p>
+                
+                <div class="w-full">
+                    <div class="syg-statement-box">"${statement}"</div>
+                    <div class="syg-btn-group" id="syg-group-${id}">
+                        <button class="syg-btn disagree" onclick="selectSyg(this, '${id}')">DISAGREE</button>
+                        <button class="syg-btn neutral" onclick="selectSyg(this, '${id}')">NEUTRAL</button>
+                        <button class="syg-btn agree" onclick="selectSyg(this, '${id}')">AGREE</button>
+                    </div>
+                </div>
+
+                <div class="hidden w-full max-w-4xl mt-12 bg-[var(--bg-panel)] border-l-4 border-[var(--brand-neon)] p-6 rounded shadow-md" id="hub-syg-${id}">
+                    <p class="text-[10px] font-bold text-[var(--brand-neon)] uppercase tracking-widest mb-3 font-typewriter"><i class="fas fa-comment-dots mr-2"></i> Director Query</p>
+                    <p class="text-xl font-bold text-white leading-relaxed font-ui mb-4">"Why did you choose that side? Is it a good survival strategy?"</p>
+                    <div class="bg-black/50 p-4 rounded border border-white/10">
+                        <p class="text-lg font-medium text-[var(--text-main)] font-typewriter">"I agree/disagree because if you do that..."</p>
+                    </div>
+                </div>
+            </div>
+        `);
+
+        const bWouldYouRather = (id, title, opt1, opt2) => step(TYPES.CUSTOM, title, `
+            <div class="max-w-5xl mx-auto flex flex-col items-center py-10 animate-in fade-in">
+                <p class="text-[10px] font-bold text-[var(--brand-neon)] uppercase tracking-widest mb-4 bg-[var(--brand-neon)]/10 px-4 py-1.5 border border-[var(--brand-neon)]/30 rounded font-typewriter"><i class="fas fa-skull-crossbones mr-2"></i> Impossible Choice</p>
+                <h2 class="font-display text-4xl font-black text-white tracking-widest uppercase mb-6 text-center">${title}</h2>
+                <p class="text-[var(--text-muted)] text-lg mb-12 text-center">Choose your fate in the cabin.</p>
+                
+                <div class="wyr-container" id="wyr-group-${id}">
+                    <div class="wyr-card" onclick="selectWyr(this, '${id}')">
+                        <i class="fas fa-door-closed"></i>
+                        <p class="font-display text-2xl font-bold text-white">${opt1}</p>
+                    </div>
+                    <div class="wyr-card" onclick="selectWyr(this, '${id}')">
+                        <i class="fas fa-tree"></i>
+                        <p class="font-display text-2xl font-bold text-white">${opt2}</p>
+                    </div>
+                </div>
+
+                <div class="hidden w-full max-w-4xl mt-12 bg-[var(--bg-panel)] border-l-4 border-[var(--accent-amber)] p-6 rounded shadow-md" id="hub-wyr-${id}">
+                    <p class="text-[10px] font-bold text-[var(--accent-amber)] uppercase tracking-widest mb-3 font-typewriter"><i class="fas fa-comment-dots mr-2"></i> Director Query</p>
+                    <p class="text-xl font-bold text-white leading-relaxed font-ui mb-4">"Why did you choose that? Which one is scarier?"</p>
+                    <div class="bg-black/50 p-4 rounded border border-white/10">
+                        <p class="text-lg font-medium text-[var(--text-main)] font-typewriter">"I would rather... because..."</p>
+                    </div>
+                </div>
+            </div>
+        `);
+
+        const bWrap = () => step(TYPES.WRAP, "Survived the Night", `
+            <div class="text-center max-w-3xl mx-auto flex flex-col items-center justify-center min-h-[60vh] animate-in fade-in">
+                <div class="w-32 h-32 rounded-full bg-black mx-auto flex items-center justify-center text-6xl text-[#22c55e] mb-10 shadow-[0_0_50px_rgba(34,197,94,0.3)] border border-[#22c55e]">
+                    <i class="fas fa-sun"></i>
+                </div>
+                <h1 class="font-display text-5xl md:text-7xl font-black text-white tracking-widest mb-6 uppercase text-shadow-glow">YOU SURVIVED</h1>
+                <p class="text-xl text-[var(--text-muted)] mb-12 font-typewriter leading-relaxed max-w-lg mx-auto">The sun is up. The cabin is quiet. Your mastery over Narrative Tenses and Relative Clauses has saved you.</p>
+                <button onclick="goHome()" class="btn-blood px-12 py-4 text-sm font-bold" style="border-color: #22c55e; color: #22c55e;">Leave the Woods</button>
+            </div>
+        `);
+
+        // --- LESSON DATA (THE BLACKWOOD CABIN - B1) - EXACTLY 25 STEPS ---
+        const lessonData = [
+            /* 1 */ bGuide("The Blackwood Incident", [
+                "Role: Stranded camper trying to survive the night.", 
+                "Atmosphere: Psychological Thriller.",
+                "Grammar Focus: Narrative Tenses (Past Simple & Continuous) & Relative Clauses.",
+                "Mission: Find clues, avoid the entity outside, and survive."
+            ]),
+
+            /* 2 */ bSlider("Fear Check", "How afraid of the dark are you?", "0% (Brave)", "100% (Terrified)", "Why are humans afraid of the dark?", "I think we are afraid because..."),
+
+            /* 3 */ bStoryCard("The Arrival", "I", "The storm hit suddenly. The rain was lashing against the windshield as we drove deep into the Blackwood forest. We found the old cabin just as the car died. It was supposed to be a fun weekend trip, but the silence in this place felt heavy. Unnatural.", "WHAT WERE YOU DOING WHEN THE STORM STARTED?"),
+
+            /* 4 */ bVocabDrag("vm1", "Inventory Check", "Match the survival items to their definitions.", [
+                {word: "Flashlight", def: "A small, battery-operated portable light."},
+                {word: "Footsteps", def: "The sound made by a person walking."},
+                {word: "Stranded", def: "Unable to leave somewhere because of a problem."},
+                {word: "Shadow", def: "A dark area produced by a body coming between light and a surface."}
+            ], "Which of these items is the most important right now?"),
+
+            /* 5 */ bGrammar("Narrative Tenses", "Use [Past Continuous] (was/were + ing) for a long action in progress, and [Past Simple] for a short action that interrupted it.", [
+                {context: "L1 Error (Past Simple twice)", text: "I [slept] when I [heard] a noise. (Bug)"},
+                {context: "Correct Form", text: "I [was sleeping] when I [heard] a noise. (Fix)"}
+            ], "var(--brand-neon)"),
+
+            /* 6 */ bTuner("tun1", "Memory Repair", "Fix the sentence. Remember: Long action vs Short interruption.", "We [played] cards when the lights [went] out.", "We [were playing] cards when the lights [went] out.", "Memory patched: Past Continuous used.", "var(--brand-neon)"),
+
+            /* 7 */ bStoryCard("The Blackout", "II", "We were sitting by the fireplace, trying to stay warm. The wind was howling outside. Suddenly, a loud CRACK echoed through the woods. The lights flickered and died. Total darkness. And then, we heard it. A slow, heavy scratching at the front door.", "HOW DID YOU FEEL WHEN THE LIGHTS WENT OUT?"),
+
+            /* 8 */ bLogicGate("lg1", "Chain of Events", "Connect the ongoing action (While...) to the sudden interruption.", [
+                {left: "While the wind was howling...", right: "...the front door suddenly opened."},
+                {left: "While I was looking for the flashlight...", right: "...I saw a shadow outside."},
+                {left: "While we were whispering...", right: "...the radio turned on by itself."}
+            ]),
+
+            /* 9 */ bRadioSimulator("Strange Signals", "The radio turned on in the dark! Turn the dial to find a clear frequency."),
+
+            /* 10 */ bRedactedNotes("fix1", "The Torn Diary", "You found an old diary on the floor. Fill in the faded verbs in the past/continuous to read it.", 
+                "August 14th: I [was read] a book when someone [knock] on the window. I looked outside, but nobody [be] there.", 
+                ["was reading", "knocked", "was"]
+            ),
+
+            /* 11 */ bStoryCard("The Cellar Door", "III", "The radio died. The scratching stopped. But a new sound started. It was coming from beneath our feet. The cellar door, which had been locked since we arrived, was slightly open. A cold breeze was blowing up from the darkness.", "WOULD YOU GO DOWN TO THE CELLAR?"),
+
+            /* 12 */ bGrammar("Relative Clauses", "Use Relative Pronouns to add spooky details to nouns: [Who] for people, [Which/That] for things, [Where] for places.", [
+                {context: "Who (People)", text: "The man [who] was standing outside vanished."},
+                {context: "Which (Things)", text: "The door, [which] was locked, is now open."}
+            ], "var(--accent-amber)"),
+
+            /* 13 */ bTuner("tun2", "Syntax Repair", "Fix the relative clause.", "The basement is the place [which] I heard the noise.", "The basement is the place [where] I heard the noise.", "Memory patched: Correct relative pronoun.", "var(--accent-amber)"),
+
+            /* 14 */ bEerieSounds("df1", "Threat Assessment", [
+                {text: "A low, rhythmic scratching against the glass, pausing exactly every 3 seconds.", isNatural: false},
+                {text: "A loud crash from the roof, followed by the sound of scattering pinecones.", isNatural: true},
+                {text: "A voice whispering your name from the bottom of the basement stairs.", isNatural: false}
+            ]),
+
+            /* 15 */ bVaultDial("vault1", "Cellar Padlock", "Align the cylinders using Relative Clauses to unlock the basement gate.", "The basement is the place...", 
+                [
+                    ["The basement is the place", "The monster is the thing", "The man is the person"], 
+                    ["who", "which", "where"], 
+                    ["the radio is kept.", "scared us.", "knocked."]
+                ], 
+                [0, 2, 0]
+            ),
+
+            /* 16 */ bStoryCard("The Typewriter", "IV", "We walked down the wooden stairs. It smelled like old earth and copper. In the center of the room, illuminated only by my flashlight, sat an antique typewriter. Suddenly, the keys started moving on their own. Clack. Clack. Clack.", "WHAT DO YOU THINK IT IS TYPING?"),
+
+            /* 17 */ bGPTSimulator("gpt1", "Spirit Board", "Interact with the haunted typewriter. Ask it a question!"),
+
+            /* 18 */ bStickyNotes("sn1", "The Warning", "Pin the entity's warning to the cork board.", ["Never", "go", "into", "the", "woods", "alone", "at", "night", "."], "Do you agree with this rule?", "Yes, because if you go alone..."),
+
+            /* 19 */ bStoryCard("The Breach", "V", "We ran upstairs. The front door was wide open. The storm was blowing leaves and rain into the living room. Standing in the doorway was a tall silhouette. It had no face. It just pointed a long, pale finger at us.", "WHAT IS YOUR FIRST INSTINCT? FIGHT OR FLIGHT?"),
+
+            /* 20 */ bActionSpinner("spin1", "Fate Generator", "Spin to see what happens next during the chaos!", [
+                "THE FLASHLIGHT BATTERIES DIED",
+                "A WINDOW JUST BROKE",
+                "FOOTSTEPS ON THE ROOF",
+                "THE PHONE LINE WENT DEAD",
+                "IT GRABBED YOUR ARM"
+            ]),
+
+            /* 21 */ bLogicGate("lg2", "Panic Mode", "Match the ongoing action to the sudden interruption during your escape.", [
+                {left: "While I was running to the kitchen...", right: "...the entity blocked the door."},
+                {left: "While we were hiding in the closet...", right: "...it started scratching the wood."},
+                {left: "While I was holding my breath...", right: "...my phone suddenly rang."}
+            ]),
+
+            /* 22 */ bRoleplay("Distress Call", "Your phone has a tiny bit of signal! Call 911.", "> 911, what is your emergency?\n'Help! We are stranded at Blackwood Cabin. We were sleeping when...'"),
+
+            /* 23 */ bStandYourGround("syg1", "Survival Instincts", "If you hear a strange noise in the dark, you should always go investigate."),
+
+            /* 24 */ bWouldYouRather("wyr1", "Impossible Choice", "Hide in the dark closet and hope it goes away.", "Run outside into the dark, stormy woods."),
+
+            /* 25 */ bWrap()
+        ];
+
+        // --- RUNTIME LOGIC ---
+        function toggleElementClass(id, action, className) {
+            const el = document.getElementById(id);
+            if (el) { if (action === 'add') el.classList.add(className); else if (action === 'remove') el.classList.remove(className); }
+        }
+
+        function startMission() {
+            toggleElementClass('dashboard', 'add', 'hidden'); toggleElementClass('dashboard', 'remove', 'flex');
+            toggleElementClass('hud-top', 'remove', 'hidden'); toggleElementClass('hud-top', 'add', 'flex');
+            toggleElementClass('mission-arena', 'remove', 'hidden'); toggleElementClass('mission-arena', 'add', 'flex');
+            toggleElementClass('nav-console', 'remove', 'hidden'); toggleElementClass('nav-console', 'add', 'flex');
+            buildLessonNavigator(); renderStep();
+        }
+
+        function goHome() {
+            toggleElementClass('dashboard', 'remove', 'hidden'); toggleElementClass('dashboard', 'add', 'flex');
+            toggleElementClass('hud-top', 'add', 'hidden'); toggleElementClass('hud-top', 'remove', 'flex');
+            toggleElementClass('mission-arena', 'add', 'hidden'); toggleElementClass('mission-arena', 'remove', 'flex');
+            toggleElementClass('nav-console', 'add', 'hidden'); toggleElementClass('nav-console', 'remove', 'flex');
+            state.current = 0; updateHUD();
+            document.getElementById('lesson-navigator')?.classList.remove('active');
+            document.getElementById('teacher-hud')?.classList.remove('active');
+            document.getElementById('whiteboard')?.classList.remove('active');
+        }
+
+        function renderStep() {
+            if (!lessonData || !lessonData[state.current]) return;
+            const step = lessonData[state.current];
+            const sCount = document.getElementById('console-counter'); if(sCount) sCount.innerText = `HOUR ${String(state.current + 1).padStart(2, '0')}/${lessonData.length}`;
+            const content = document.getElementById('mission-content'); if(content) content.innerHTML = `<div class="w-full max-w-7xl mx-auto">${step.html}</div>`;
+            updateHUD();
+            
+            const navList = document.getElementById('nav-steps-list');
+            if (navList) {
+                Array.from(navList.children).forEach((btn, i) => {
+                    if(i === state.current) { btn.classList.add('bg-white/10', 'text-[var(--brand-neon)]', 'border-l-2', 'border-[var(--brand-neon)]'); btn.classList.remove('text-[var(--text-muted)]'); } 
+                    else { btn.classList.remove('bg-white/10', 'text-[var(--brand-neon)]', 'border-l-2', 'border-[var(--brand-neon)]'); btn.classList.add('text-[var(--text-muted)]'); }
+                });
+            }
+
+            if(step.type === TYPES.BUILDER) { setTimeout(setupWb, 50); }
+            if(step.type === TYPES.DRILL && document.querySelector('.vault-dial-container')) { setTimeout(setupVaults, 50); }
+        }
+
+        function nextStep() { if (state.current < lessonData.length - 1) { state.current++; renderStep(); } else { goHome(); } }
+        function prevStep() { if (state.current > 0) { state.current--; renderStep(); } }
+        
+        function toggleLessonNavigator() { document.getElementById('lesson-navigator').classList.toggle('active'); document.getElementById('teacher-hud')?.classList.remove('active'); document.getElementById('whiteboard')?.classList.remove('active');}
+        function toggleTeacherHUD() { document.getElementById('teacher-hud').classList.toggle('active'); document.getElementById('lesson-navigator')?.classList.remove('active'); document.getElementById('whiteboard')?.classList.remove('active');}
+        function toggleWhiteboard() { document.getElementById('whiteboard').classList.toggle('active'); document.getElementById('lesson-navigator')?.classList.remove('active'); document.getElementById('teacher-hud')?.classList.remove('active');}
+        function toggleFullscreen() { if (!document.fullscreenElement) { document.documentElement.requestFullscreen().catch(err => console.log(err)); } else { if (document.exitFullscreen) document.exitFullscreen(); } }
+        function toggleStarter(btn) { const content = btn.nextElementSibling; if (content.classList.contains('open')) { content.classList.remove('open'); } else { content.classList.add('open'); } }
+
+        // --- MINIGAMES LOGIC ---
+
+        // Drag & Drop Vocab
+        function dragVocab(e, el) { e.dataTransfer.setData('text', el.dataset.word); el.classList.add('dragging'); }
+        function allowDropVocab(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+        function leaveDropVocab(e) { e.currentTarget.classList.remove('drag-over'); }
+        function dropVocab(e, zone) { 
+            e.preventDefault(); zone.classList.remove('drag-over'); 
+            const word = e.dataTransfer.getData('text'); 
+            if(word) checkVocabMatch(word, zone); 
+        }
+        function checkVocabMatch(wordStr, zone) {
+            const expected = zone.dataset.expected;
+            if(zone.querySelector('.matched-word')) return;
+
+            if(wordStr === expected) {
+                const wordEl = document.querySelector(`.drag-word[data-word="${wordStr}"]`);
+                if(!wordEl) return;
+                
+                const dropArea = zone.querySelector('.drop-area'); dropArea.innerHTML = ''; 
+                wordEl.classList.remove('drag-word');
+                wordEl.classList.add('matched-word', 'bg-[var(--brand-neon)]', 'text-white', 'w-full', 'h-full', 'm-0', 'shadow-none', 'flex', 'items-center', 'justify-center', 'font-bold', 'font-typewriter', 'text-lg', 'rounded-sm', 'border-none');
+                wordEl.draggable = false;
+                
+                dropArea.appendChild(wordEl); dropArea.classList.replace('bg-[rgba(0,0,0,0.8)]', 'bg-transparent');
+                zone.classList.replace('border-dashed', 'border-solid');
+                zone.classList.replace('border-[var(--text-muted)]', 'border-[var(--brand-neon)]');
+                
+                state.xp += 3; updateHUD(); 
+                
+                const containerId = zone.closest('[id^="vocab-container-"]').id;
+                const container = document.getElementById(containerId);
+                const bank = container.querySelector('.vocab-bank');
+                if(bank.children.length === 0 || container.querySelectorAll('.matched-word').length === container.querySelectorAll('.drop-zone').length) {
+                    const followup = container.querySelector('.vocab-followup');
+                    followup.classList.remove('hidden'); followup.classList.add('animate-in', 'fade-in');
+                }
+            } else {
+                zone.classList.add('shake'); zone.style.borderColor = "var(--accent-amber)"; state.hp -= 10; updateHUD();
+                setTimeout(() => { zone.classList.remove('shake'); zone.style.borderColor = "var(--text-muted)"; }, 400);
+            }
+        }
+
+        // Tuner
+        function toggleTuner(id, textAff, textAlt, feedback, tagColor) {
+            const btn = document.getElementById(`tuner-track-${id}`);
+            const textEl = document.getElementById(`tuner-text-${id}`);
+            const aff = document.getElementById(`mode-aff-${id}`); const alt = document.getElementById(`mode-alt-${id}`);
+            
+            btn.classList.toggle('active');
+            textEl.style.opacity = 0;
+            
+            setTimeout(() => {
+                if(btn.classList.contains('active')) {
+                    aff.classList.replace('text-[var(--text-muted)]', 'text-[var(--border-soft)]'); alt.classList.replace('text-[var(--text-main)]', 'text-[var(--brand-neon)]');
+                    textEl.innerHTML = textAlt.replace(/\[(.*?)\]/g, `<span style="color: ${tagColor}" class="border-b-2 border-[var(--brand-neon)] pb-1">$1</span>`); 
+                    textEl.classList.replace('text-[var(--brand-neon)]', 'text-white');
+                    document.getElementById(`tuner-fb-${id}`).classList.remove('hidden');
+                } else {
+                    aff.classList.replace('text-[var(--border-soft)]', 'text-[var(--text-muted)]'); alt.classList.replace('text-[var(--brand-neon)]', 'text-[var(--text-main)]');
+                    textEl.innerHTML = textAff.replace(/\[(.*?)\]/g, `<span class="border-b-2 border-[var(--brand-neon)]/50 pb-1">$1</span>`); 
+                    textEl.classList.replace('text-white', 'text-[var(--brand-neon)]');
+                    document.getElementById(`tuner-fb-${id}`).classList.add('hidden');
+                }
+                textEl.style.opacity = 1;
+            }, 200);
+        }
+
+        // Logic Gate (Match)
+        let activeMatch = null; let matchesMatched = 0;
+        function handleMatch(node) {
+            if (node.classList.contains('matched')) return;
+            if (!activeMatch) { activeMatch = node; node.classList.add('active'); } 
+            else {
+                if (activeMatch.dataset.type !== node.dataset.type && activeMatch.dataset.id === node.dataset.id) {
+                    activeMatch.classList.replace('active', 'matched'); node.classList.add('matched');
+                    activeMatch = null; matchesMatched++; state.xp += 2; updateHUD();
+                    if(matchesMatched === document.getElementById('match-board').children[0].children[0].children.length) { document.getElementById('match-hub').classList.remove('hidden'); matchesMatched = 0; }
+                } else {
+                    activeMatch.classList.remove('active'); activeMatch.classList.add('shake'); activeMatch.style.borderColor = "var(--brand-neon)"; activeMatch.style.color = "var(--brand-neon)";
+                    node.classList.add('shake'); node.style.borderColor = "var(--brand-neon)"; node.style.color = "var(--brand-neon)";
+                    state.hp -= 10; updateHUD();
+                    setTimeout(() => { 
+                        activeMatch.classList.remove('shake'); activeMatch.style.borderColor = "rgba(255,255,255,0.1)"; activeMatch.style.color = "var(--text-muted)"; 
+                        node.classList.remove('shake'); node.style.borderColor = "rgba(255,255,255,0.1)"; node.style.color = "var(--text-muted)"; 
+                        activeMatch = null; 
+                    }, 400);
+                }
+            }
+        }
+
+        // Radio Simulator
+        let radioSteps = 0;
+        function tuneRadio(dir) {
+            radioSteps++;
+            const screen = document.getElementById('radio-screen');
+            screen.classList.add('static');
+            screen.innerText = "STATIC...";
+            state.hp -= 2; updateHUD();
+            
+            setTimeout(() => {
+                screen.classList.remove('static');
+                if(radioSteps > 3) {
+                    screen.innerText = "S O S";
+                    screen.style.color = "var(--brand-neon)";
+                    screen.style.textShadow = "0 0 15px var(--brand-neon)";
+                    document.getElementById('hub-radio').classList.remove('hidden');
+                    state.xp += 5; updateHUD();
+                } else {
+                    const freqs = ["98.2 FM", "101.1 FM", "NO SIGNAL"];
+                    screen.innerText = freqs[Math.floor(Math.random() * freqs.length)];
+                }
+            }, 500);
+        }
+
+        // Fixer (Redacted Diary)
+        let activeBug = null; let expectedFix = "";
+        function triggerFixer(el, answer) {
+            if(el.classList.contains('faded-fixed')) return;
+            activeBug = el; expectedFix = answer;
+            const panel = document.getElementById('fix-panel'); panel.classList.remove('translate-y-full');
+            document.getElementById('fix-input').value = ''; document.getElementById('fix-input').focus();
+        }
+        function submitFixer() {
+            const input = document.getElementById('fix-input').value.trim().toLowerCase();
+            const panel = document.getElementById('fix-panel');
+            if(input === expectedFix.toLowerCase()) {
+                activeBug.innerText = expectedFix; activeBug.classList.remove('faded-word'); activeBug.classList.add('faded-fixed');
+                panel.classList.add('translate-y-full');
+                if(activeBug.closest('.diary-page').querySelectorAll('.faded-word').length === 0) { state.xp += 5; updateHUD(); document.getElementById('fixer-hub').classList.remove('hidden');}
+            } else {
+                const inputEl = document.getElementById('fix-input'); inputEl.classList.add('shake'); inputEl.style.borderColor = "var(--brand-neon)";
+                state.hp -= 10; updateHUD(); setTimeout(() => { inputEl.classList.remove('shake'); inputEl.style.borderColor = "#444"; }, 400);
+            }
+        }
+        document.getElementById('fix-input')?.addEventListener('keypress', (e) => { if (e.key === 'Enter') submitFixer(); });
+
+        // Sound Check
+        let turingSolved = 0;
+        function guessTuring(btn, isCorrect, cardId) {
+            const card = document.getElementById(cardId);
+            if(card.classList.contains('solved-human') || card.classList.contains('solved-ai')) return;
+
+            if (isCorrect) {
+                if(btn.classList.contains('human')) card.classList.add('solved-human');
+                else card.classList.add('solved-ai');
+                
+                turingSolved++;
+                state.xp += 5; updateHUD();
+                const totalCards = card.parentElement.children.length;
+                if(turingSolved === totalCards) {
+                    const hubId = card.parentElement.nextElementSibling.id;
+                    document.getElementById(hubId).classList.remove('hidden');
+                    turingSolved = 0;
+                }
+            } else {
+                card.classList.add('shake'); card.style.borderColor = "var(--brand-neon)";
+                state.hp -= 10; updateHUD();
+                setTimeout(() => { card.classList.remove('shake'); card.style.borderColor = "rgba(255,255,255,0.1)"; }, 400);
+            }
+        }
+
+        // Vault Dial (Padlock)
+        let vaultState = {};
+        function setupVaults() {
+            document.querySelectorAll('[id^="vault-data-"]').forEach(el => {
+                const id = el.id.replace('vault-data-', '');
+                const dials = JSON.parse(el.getAttribute('data-dials'));
+                const correct = JSON.parse(el.getAttribute('data-correct'));
+                vaultState[id] = { dials: dials, correct: correct, current: new Array(dials.length).fill(0) };
+                
+                dials.forEach((dialOptions, colIndex) => {
+                    const screen = document.getElementById(`dial-screen-${id}-${colIndex}`);
+                    if(screen) screen.innerText = dialOptions[0];
+                });
+            });
+        }
+        function changeDial(id, colIndex, direction) {
+            if(!vaultState[id]) return;
+            const dialData = vaultState[id].dials[colIndex];
+            let currentIdx = vaultState[id].current[colIndex];
+            
+            currentIdx += direction;
+            if (currentIdx < 0) currentIdx = dialData.length - 1;
+            if (currentIdx >= dialData.length) currentIdx = 0;
+            
+            vaultState[id].current[colIndex] = currentIdx;
+            
+            const screen = document.getElementById(`dial-screen-${id}-${colIndex}`);
+            screen.classList.add('fade-in'); screen.innerText = dialData[currentIdx];
+            setTimeout(() => screen.classList.remove('fade-in'), 400);
+        }
+        function verifyVault(id) {
+            if(!vaultState[id]) return;
+            const current = vaultState[id].current;
+            const correct = vaultState[id].correct;
+            
+            let isCorrect = current.every((val, index) => val === correct[index]);
+            
+            if(isCorrect) {
+                document.getElementById(`vault-fb-${id}`).classList.remove('hidden');
+                document.querySelector(`#vault-data-${id} .vault-dial-container`).style.borderColor = "var(--brand-neon)";
+                state.xp += 5; updateHUD(); 
+            } else {
+                const container = document.querySelector(`#vault-data-${id} .vault-dial-container`);
+                container.classList.add('shake'); container.style.borderColor = "var(--brand-neon)";
+                state.hp -= 10; updateHUD();
+                setTimeout(() => { container.classList.remove('shake'); container.style.borderColor = "#333"; }, 400);
+            }
+        }
+
+        // Spirit Board (JS Typewriter)
+        let gptPrompted = false;
+        function triggerSpiritTyping(id) {
+            if (gptPrompted) return;
+            gptPrompted = true;
+            const btn = document.getElementById(`prompt-btn-${id}`);
+            btn.style.display = 'none';
+
+            const chat = document.getElementById(`ai-chat-box-${id}`);
+            chat.innerHTML += `<div class="chat-msg user">Who are you?</div>`;
+            chat.scrollTop = chat.scrollHeight;
+
+            setTimeout(() => {
+                const msgId = 'spirit-msg-' + Math.random().toString(36).substr(2, 9);
+                chat.innerHTML += `<div class="chat-msg ai" id="${msgId}" style="border-color: var(--brand-neon); color: var(--brand-neon);"></div>`;
+                
+                const text = "I A M T H E M A N W H O N E V E R L E F T";
+                let i = 0;
+                const el = document.getElementById(msgId);
+                const interval = setInterval(() => {
+                    el.innerHTML += text.charAt(i);
+                    i++;
+                    chat.scrollTop = chat.scrollHeight;
+                    
+                    // Shake effect on the container for extra scare
+                    if(i % 5 === 0) {
+                        chat.classList.add('shake');
+                        setTimeout(() => chat.classList.remove('shake'), 100);
+                    }
+
+                    if(i >= text.length) {
+                        clearInterval(interval);
+                        setTimeout(() => {
+                            document.getElementById(`ai-followup-${id}`).classList.remove('hidden');
+                            state.xp += 5; updateHUD(); 
+                        }, 1000);
+                    }
+                }, 100); // speed of typing
+            }, 1000);
+        }
+
+        // Sticky Notes
+        let stState = {};
+        function setupWb() {
+            document.querySelectorAll('[id^="st-data-"]').forEach(el => {
+                const id = el.id.replace('st-data-', '');
+                const expectedData = el.getAttribute('data-expected');
+                if(expectedData) { stState[id] = { current: [], expected: JSON.parse(expectedData) }; }
+            });
+        }
+        function moveSticky(pill, word, id) {
+            if(pill.classList.contains('used')) return;
+            if(!stState[id]) return;
+            stState[id].current.push(word); pill.classList.add('used');
+            const dz = document.getElementById(`st-dropzone-${id}`);
+            const newPill = document.createElement('span'); newPill.className = 'pill-in-zone'; newPill.innerText = word; dz.appendChild(newPill);
+            if(stState[id].current.length === stState[id].expected.length) {
+                let win = stState[id].current.every((val, index) => val === stState[id].expected[index]);
+                if(win) { document.getElementById(`st-fb-${id}`).classList.remove('hidden'); state.xp += 5; updateHUD(); }
+                else { dz.parentElement.classList.add('shake'); state.hp -= 10; updateHUD(); setTimeout(() => dz.parentElement.classList.remove('shake'), 400); }
+            }
+        }
+        function resetSticky(id) {
+            if(!stState[id]) return;
+            stState[id].current = []; document.getElementById(`st-dropzone-${id}`).innerHTML = ''; document.getElementById(`st-fb-${id}`).classList.add('hidden');
+            document.getElementById(`st-bank-${id}`).querySelectorAll('.sticky-note').forEach(p => p.classList.remove('used'));
+        }
+
+        // Action Spinner
+        function spinAction(id) {
+            const container = document.getElementById(`spin-container-${id}`);
+            const textEl = document.getElementById(`slot-display-${id}`);
+            const btn = document.getElementById(`spin-btn-${id}`);
+            const items = JSON.parse(container.getAttribute('data-items'));
+            
+            btn.disabled = true; btn.style.opacity = '0.5'; btn.innerHTML = 'SPINNING...';
+            
+            let spins = 0; const maxSpins = 20; 
+            
+            const interval = setInterval(() => {
+                textEl.classList.add('blur');
+                setTimeout(() => {
+                    const randomItem = items[Math.floor(Math.random() * items.length)];
+                    textEl.innerText = randomItem;
+                    textEl.classList.remove('blur');
+                }, 50); 
+                
+                spins++;
+                if(spins >= maxSpins) {
+                    clearInterval(interval);
+                    btn.style.display = 'none';
+                    document.getElementById(`hub-spin-${id}`).classList.remove('hidden');
+                    state.xp += 5; updateHUD(); 
+                }
+            }, 100);
+        }
+
+        // Stand Your Ground
+        function selectSyg(btn, id) {
+            const group = document.getElementById(`syg-group-${id}`);
+            if(group.classList.contains('locked')) return;
+
+            btn.classList.add('selected');
+            group.classList.add('locked');
+            document.getElementById(`hub-syg-${id}`).classList.remove('hidden');
+            state.xp += 5; updateHUD(); 
+        }
+
+        // Would You Rather
+        function selectWyr(card, id) {
+            const group = document.getElementById(`wyr-group-${id}`);
+            if(group.classList.contains('locked')) return;
+
+            card.classList.add('selected');
+            group.classList.add('locked');
+            document.getElementById(`hub-wyr-${id}`).classList.remove('hidden');
+            state.xp += 5; updateHUD(); 
+        }
+
+        // Utils
+        function shuffleArray(array) {
+            let curId = array.length; while (0 !== curId) { let randId = Math.floor(Math.random() * curId); curId -= 1; let tmp = array[curId]; array[curId] = array[randId]; array[randId] = tmp; } return array;
+        }
+
+        function buildLessonNavigator() {
+            const list = document.getElementById('nav-steps-list'); if (!list) return;
+            list.innerHTML = '';
+            lessonData.forEach((step, i) => {
+                const btn = document.createElement('button');
+                btn.className = `w-full text-left p-3 rounded flex items-center gap-3 transition-all font-ui text-sm ${i === state.current ? 'bg-white/10 text-[var(--brand-neon)] font-bold border-l-2 border-[var(--brand-neon)]' : 'text-[var(--text-muted)] hover:bg-white/5'}`;
+                btn.innerHTML = `<span class="w-6 opacity-50 font-typewriter text-xs">${i+1}.</span><div class="flex flex-col truncate"><span class="truncate">${step.title}</span></div>`;
+                btn.onclick = () => { state.current = i; renderStep(); toggleLessonNavigator(); };
+                list.appendChild(btn);
+            });
+        }
+
+        function triggerPraise(main, sub) {
+            document.getElementById('teacher-hud')?.classList.remove('active'); 
+            const overlay = document.getElementById('praise-overlay'); const card = document.getElementById('praise-card');
+            
+            document.getElementById('praise-main').innerText = main; document.getElementById('praise-sub').innerText = sub;
+            if(main === 'SURVIVOR INSTINCT') {
+                document.getElementById('praise-icon').className = "fas fa-shield-alt text-6xl text-[var(--accent-amber)] mb-6 drop-shadow-[0_0_15px_rgba(245,158,11,0.5)]";
+                document.getElementById('praise-main').className = "font-display text-4xl md:text-5xl font-black tracking-widest uppercase mb-4 text-[var(--accent-amber)]";
+                card.style.boxShadow = "0 0 50px rgba(245,158,11,0.2)";
+                card.style.borderColor = "var(--accent-amber)";
+            } else {
+                document.getElementById('praise-icon').className = "fas fa-fire text-6xl text-[var(--brand-neon)] mb-6 drop-shadow-[0_0_15px_rgba(220,38,38,0.5)]";
+                document.getElementById('praise-main').className = "font-display text-4xl md:text-5xl font-black tracking-widest uppercase mb-4 text-[var(--brand-neon)]";
+                card.style.boxShadow = "0 0 50px rgba(220,38,38,0.2)";
+                card.style.borderColor = "var(--brand-neon)";
+            }
+
+            overlay.classList.remove('opacity-0', 'pointer-events-none');
+            setTimeout(() => card.classList.replace('scale-50', 'scale-100'), 50); 
+            setTimeout(() => { card.classList.replace('scale-100', 'scale-50'); overlay.classList.add('opacity-0', 'pointer-events-none'); }, 2000);
+        }
+        
+        window.onload = () => { updateHUD(); buildLessonNavigator(); goHome(); };
+    </script>
+</body>
+</html>
